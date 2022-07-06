@@ -1,10 +1,10 @@
 #!/bin/bash
 
-INIT_FILE=patch/init.sql
+INIT_FILE=patch/init.sql;
 
-cat patch/base.sql > $INIT_FILE
+cat patch/base.sql > $INIT_FILE;
 
-for schema in main
+for schema in core
 do
   printf "\n------------------------------------------------------------------------------------------------------------------------\n" >> $INIT_FILE
 
