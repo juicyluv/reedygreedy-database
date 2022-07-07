@@ -1,6 +1,6 @@
 revoke all on database postgres, template0, template1 from public;
 
-create user web password 'qwerty';
+create user web encrypted password 'qwerty';
 
 create database reedygreedy;
 grant connect on database reedygreedy to web;

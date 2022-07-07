@@ -1,6 +1,8 @@
+.PHONY:gen
 gen:
-	sh ./generate_init.sh
+	sh generate_init.sh
 
+.PHONY:patch
 patch:
 	cat patch/init.sql | psql -U postgres
 
