@@ -5,7 +5,7 @@ create table if not exists core.books(
   price       int          not null,
   count       int          not null,
   discount    int          not null,
-  creator_id  uuid         references core.users(id),
+  creator_id  uuid         not null references core.users(id),
   description text,
   updated_at  timestamptz,
   deleted_at  timestamptz
