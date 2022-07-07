@@ -3,7 +3,7 @@ create table if not exists main.authors(
   name        text,
   surname     text not null,
   creator_id  uuid not null references main.users(id),
-  created_at  timestamptz not null default now(),
+  created_at  timestamptz default now(),
   updated_at  timestamptz,
   deleted_at  timestamptz
 );
