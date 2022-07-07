@@ -7,6 +7,7 @@ select
   creator_id,
   status,
   payload,
+  name,
   created_at,
   updated_at,
   disabled_at
