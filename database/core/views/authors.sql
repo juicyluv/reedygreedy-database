@@ -1,5 +1,5 @@
-drop view if exists core.list_authors;
-create view core.list_authors as
+drop view if exists core.authors;
+create view core.authors as
 select
     id,
     name,
@@ -7,7 +7,7 @@ select
     creator_id,
     created_at,
     updated_at
-from core.authors
+from main.authors
 where deleted_at is null;
 
-alter view core.list_authors owner to postgres;
+alter view core.authors owner to postgres;

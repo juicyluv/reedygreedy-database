@@ -1,5 +1,5 @@
-drop view if exists core.list_books;
-create view core.list_books as
+drop view if exists core.books;
+create view core.books as
 select
     id,
     title,
@@ -10,7 +10,7 @@ select
     creator_id,
     description,
     updated_at
-from core.books
+from main.books
 where deleted_at is null;
 
-alter view core.list_books owner to postgres;
+alter view core.books owner to postgres;

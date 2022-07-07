@@ -6,7 +6,7 @@ initdb -D <database-file-path> -U postgres -E UTF8
 
 2. Start database
 ```bash
-pg_ctl start -D <database-file-path>
+pg_ctl start -D D:\Database\Clusters\reedygreedy
 ```
 
 3. Generate database init file 
