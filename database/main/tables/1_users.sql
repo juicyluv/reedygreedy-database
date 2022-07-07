@@ -5,6 +5,7 @@ create table if not exists main.users(
   password    text        not null check(password != ''),
   creator_id  uuid        references main.users(id),
   status      text        not null default 'invited',
+  name        text,
   payload     json,
   created_at  timestamptz not null default now(),
   updated_at  timestamptz,
