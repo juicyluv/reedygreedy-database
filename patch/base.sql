@@ -16,3 +16,5 @@ set client_min_messages = error;
 set check_function_bodies = false;
 
 revoke all on schema public from public;
+
+create extension pgcrypto;
