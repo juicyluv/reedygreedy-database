@@ -10,6 +10,7 @@ select
   name,
   created_at,
   updated_at,
+  disable_reason,
   disabled_at
 from main.users
 where deleted_at is null;

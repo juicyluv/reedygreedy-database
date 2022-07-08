@@ -1,14 +1,15 @@
-create or replace function core.get_user(_user_id    uuid,
-  out                                    username    text,
-  out                                    email       text,
-  out                                    status      text,
-  out                                    payload     jsonb,
-  out                                    name        text,
-  out                                    creator_id  uuid,
-  out                                    created_at  timestamptz,
-  out                                    updated_at  timestamptz,
-  out                                    disabled_at timestamptz,
-  out                                    error       jsonb)
+create or replace function core.get_user(_user_id       uuid,
+  out                                    username       text,
+  out                                    email          text,
+  out                                    status         text,
+  out                                    payload        jsonb,
+  out                                    name           text,
+  out                                    creator_id     uuid,
+  out                                    created_at     timestamptz,
+  out                                    updated_at     timestamptz,
+  out                                    disabled_at    timestamptz,
+  out                                    disable_reason smallint,
+  out                                    error          jsonb)
 as $$
 begin
 
@@ -21,7 +22,8 @@ begin
     u.creator_id,
     u.created_at,
     u.updated_at,
-    u.disabled_at
+    u.disabled_at,
+    u.disable_reason
   into
     username,
     email,
@@ -31,7 +33,8 @@ begin
     creator_id,
     created_at,
     updated_at,
-    disabled_at
+    disabled_at,
+    disable_reason
   from
     core.users u
   where u.id = _user_id;
