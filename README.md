@@ -1,22 +1,18 @@
-1. Create database
+# ReedyGreedy Database
 
-```bash
-initdb -D <database-file-path> -U postgres -E UTF8
+Database implementation of the [RreedyGreedy project](https://github.com/juicyluv/reedygreedy).
+
+## Initialization and start
+
+1. Generate database init file 
+```make
+make gen
 ```
 
-2. Start database
-```bash
-pg_ctl start -D D:\Database\Clusters\reedygreedy
-```
-
-3. Generate database init file 
-```bash
-cd patch
-sh generate_init.sh
-```
-
-4. Initialize database via generated init file
+2. Initialize database via generated init file
 ```bash 
-cd ..
-cat .\patch\init.sql | psql -U postgres
+make patch
 ```
+
+Make sure that you have proper `pg_hba.conf` file.
+You can change the settings as you like.
