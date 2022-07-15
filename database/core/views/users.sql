@@ -4,13 +4,13 @@ select
   id,
   username,
   email,
+  password,
   creator_id,
   status,
-  payload,
   name,
+  payload,
   created_at,
   updated_at,
-  disable_reason,
   disabled_at
 from main.users
 where deleted_at is null;
