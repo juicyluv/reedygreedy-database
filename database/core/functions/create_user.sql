@@ -5,35 +5,61 @@ create or replace function core.create_user(_invoker_id bigint,
                                             _name       text = null,
                                             _status     text = null,
                                             _payload    jsonb = null,
-out                                         user_id     bigint,
-out                                         error       jsonb)
+  out                                       user_id     bigint,
+  out                                       error       jsonb)
 as $$
-declare
-  username text;
-  email text;
 begin
 
-  select
-    u.username,
-    u.email
-  into
-    username,
-    email
-  from core.users u
-  where u.id = _invoker_id;
-
-  if not found then
-    error := jsonb_build_object('code', 1, 'invoker_id', 'not_found');
+  if not exists(select 1
+            from core.users u
+            where u.id = _invoker_id)
+  then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Invoker not found.',
+        'code', 'UNAUTHORIZED'
+      )
+    );
     return;
   end if;
 
-  if lower(username) = lower(_username) then
-    error := jsonb_build_object('code', 1, 'username', 'duplicate');
+  if exists(select 1
+                from core.users u
+                where lower(u.username) = lower(_username))
+  then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Username already taken.',
+        'code', 'OBJECT_DUPLICATE'
+      )
+    );
     return;
   end if;
 
-  if lower(email) = lower(_email) then
-    error := jsonb_build_object('code', 1, 'email', 'duplicate');
+  if exists(select 1
+                from core.users u
+                where lower(u.email) = lower(_email))
+  then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Email already taken.',
+        'code', 'OBJECT_DUPLICATE'
+      )
+    );
+    return;
+  end if;
+
+  if _name is not null and _name = '' then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Name cannot be empty.',
+        'code', 'INVALID_ARGUMENT'
+      )
+    );
     return;
   end if;
 
@@ -41,13 +67,13 @@ begin
   values(default, _username, _email, _password, _invoker_id, _name, _status, _payload)
   returning id into user_id;
 
-  error := jsonb_build_object('code', 0);
+  error := jsonb_build_object('status', 0);
 
 exception
   when others then
 
     user_id := null;
-    error := jsonb_build_object('code', -1);
+    error := jsonb_build_object('status', -1);
 
 end;
 $$ language plpgsql volatile security definer;

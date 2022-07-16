@@ -5,6 +5,7 @@ select
   title,
   price,
   count,
+  author_id,
   creator_id,
   description,
   created_at,
