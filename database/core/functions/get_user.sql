@@ -40,16 +40,22 @@ begin
   where u.id = _user_id;
 
   if not found then
-    error := jsonb_build_object('code', 1, 'user_id', 'not_found');
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'User not found.',
+        'code', 'NOT_FOUND'
+      )
+    );
     return;
   end if;
 
-  error := jsonb_build_object('code', 0);
+  error := jsonb_build_object('status', 0);
 
 exception
   when others then
 
-    error := jsonb_build_object('code', -1);
+    error := jsonb_build_object('status', -1);
 
 end;
 $$ language plpgsql stable security definer;
