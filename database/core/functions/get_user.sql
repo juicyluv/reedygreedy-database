@@ -1,10 +1,10 @@
-create or replace function core.get_user(_user_id       uuid,
+create or replace function core.get_user(_user_id       bigint,
   out                                    username       text,
   out                                    email          text,
   out                                    status         text,
   out                                    payload        jsonb,
   out                                    name           text,
-  out                                    creator_id     uuid,
+  out                                    creator_id     bigint,
   out                                    created_at     timestamptz,
   out                                    updated_at     timestamptz,
   out                                    disabled_at    timestamptz,
@@ -54,6 +54,6 @@ exception
 end;
 $$ language plpgsql stable security definer;
 
-alter function core.get_user(uuid) owner to postgres;
-grant execute on function core.get_user(uuid) to postgres, web;
-revoke all on function core.get_user(uuid) from public;
+alter function core.get_user(bigint) owner to postgres;
+grant execute on function core.get_user(bigint) to postgres, web;
+revoke all on function core.get_user(bigint) from public;

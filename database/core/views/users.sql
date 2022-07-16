@@ -11,7 +11,8 @@ select
   payload,
   created_at,
   updated_at,
-  disabled_at
+  disabled_at,
+  disable_reason
 from main.users
 where deleted_at is null;
 
