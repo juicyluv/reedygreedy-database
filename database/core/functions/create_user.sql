@@ -11,8 +11,8 @@ as $$
 begin
 
   if not exists(select 1
-            from core.users u
-            where u.id = _invoker_id)
+                from core.users u
+                where u.id = _invoker_id)
   then
     error := jsonb_build_object(
       'status', 1,
