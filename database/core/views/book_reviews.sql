@@ -3,10 +3,10 @@ create view core.book_reviews as
 select
   id,
   book_id,
-  creator,
+  creator_id,
   review,
-  created,
-  updated,
+  created_at,
+  updated_at,
   comment
 from main.book_reviews;
 
