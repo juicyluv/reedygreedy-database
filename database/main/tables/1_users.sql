@@ -6,7 +6,7 @@ create table if not exists main.users(
   creator_id     bigint      references main.users(id),
   status         text        default 'invited',
   name           text,
-  payload        json,
+  payload        jsonb,
   created_at     timestamptz default now(),
   updated_at     timestamptz,
   disabled_at    timestamptz,

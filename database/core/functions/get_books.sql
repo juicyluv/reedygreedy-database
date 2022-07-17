@@ -101,6 +101,6 @@ exception
 end;
 $$ language plpgsql stable security definer;
 
-alter function core.get_book(bigint) owner to postgres;
-grant execute on function core.get_book(bigint) to postgres, web;
-revoke all on function core.get_book(bigint) from public;
+alter function core.get_books(text, int, int, text[]) owner to postgres;
+grant execute on function core.get_books(text, int, int, text[]) to postgres, web;
+revoke all on function core.get_books(text, int, int, text[]) from public;
