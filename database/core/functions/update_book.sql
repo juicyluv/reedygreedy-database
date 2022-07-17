@@ -109,7 +109,8 @@ begin
             case when _price is null then '' else 'price = $2,' end ||
             case when _count is null then '' else 'count = $3,' end ||
             case when _author_id is null then '' else 'author_id = $4,' end ||
-            case when _description is null then '' else 'description = $5,' end;
+            case when _description is null then '' else 'description = $5,' end ||
+            'updated_at = now() ';
 
   _sqlstr := format('UPDATE main.books ' ||
                     'SET %s ' ||

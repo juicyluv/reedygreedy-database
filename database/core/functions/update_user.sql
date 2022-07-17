@@ -116,7 +116,8 @@ begin
             case when _password is null then '' else 'password = $2,' end ||
             case when _email    is null then '' else 'email = $3,' end ||
             case when _name     is null then '' else 'name = $4,' end ||
-            case when _payload  is null then '' else 'payload = $5,' end;
+            case when _payload  is null then '' else 'payload = $5,' end ||
+            'updated_at = now() ';
 
   _sqlstr := format('UPDATE main.users ' ||
                     'SET %s ' ||
