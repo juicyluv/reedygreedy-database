@@ -4,7 +4,6 @@ create table if not exists main.users(
   email          text        not null unique check(email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$'),
   password       text        not null check(password != ''),
   creator_id     bigint      references main.users(id),
-  status         text        default 'invited',
   name           text,
   payload        jsonb,
   created_at     timestamptz default now(),
