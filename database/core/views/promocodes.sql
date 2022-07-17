@@ -3,9 +3,9 @@ create view core.promocodes as
 select
   id,
   promocode,
-  created_a,
+  created_at,
   payload,
-  usage_cou,
+  usage_count,
   ending_at
 from main.promocodes;
 
