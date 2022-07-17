@@ -6,7 +6,6 @@ select
   email,
   password,
   creator_id,
-  status,
   name,
   payload,
   created_at,

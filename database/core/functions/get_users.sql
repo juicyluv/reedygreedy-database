@@ -5,7 +5,6 @@ create or replace function core.get_users(_search          text = null,
   out                                     user_id          bigint,
   out                                     username         text,
   out                                     email            text,
-  out                                     status           text,
   out                                     payload          jsonb,
   out                                     name             text,
   out                                     creator_id       bigint,
@@ -24,7 +23,6 @@ begin
                              u.id             AS user_id,
                              u.username       AS username,
                              u.email          AS email,
-                             u.status         AS status,
                              u.payload        AS payload,
                              u.name           AS name,
                              u.creator_id     AS creator_id,
@@ -50,7 +48,6 @@ begin
 
              SELECT
               NULL::BIGINT,
-              NULL::TEXT,
               NULL::TEXT,
               NULL::TEXT,
               NULL::JSONB,
@@ -83,7 +80,6 @@ exception
   when others then
 
     return query with t as (values(null::bigint,
-                                   null::text,
                                    null::text,
                                    null::text,
                                    null::jsonb,

@@ -1,7 +1,6 @@
 create or replace function core.get_user(_user_id         bigint,
   out                                    username         text,
   out                                    email            text,
-  out                                    status           text,
   out                                    payload          jsonb,
   out                                    name             text,
   out                                    creator_id       bigint,
@@ -17,7 +16,6 @@ begin
   select
     u1.username,
     u1.email,
-    u1.status,
     u1.payload,
     u1.creator_id,
     u2.username,
@@ -28,7 +26,6 @@ begin
   into
     username,
     email,
-    status,
     payload,
     name,
     creator_id,

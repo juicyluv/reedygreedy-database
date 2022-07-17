@@ -24,6 +24,19 @@ begin
     );
   end if;
 
+  if not exists(select 1
+                from core.books b
+                where b.id = _book_id)
+  then
+    return jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Book not found.',
+        'code', 'NOT_FOUND'
+        )
+      );
+  end if;
+
   if _title is null
      and _price is null
      and _count is null
