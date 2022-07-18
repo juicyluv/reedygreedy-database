@@ -2,8 +2,9 @@ create table if not exists main.promocodes(
   id          bigserial   primary key,
   promocode   text        not null,
   created_at  timestamptz default now(),
+  updated_at  timestamptz,
   payload     jsonb,
-  usage_count int         default 1,
+  usage_count int         not null default 1 check(usage_count >= 0),
   ending_at   timestamptz
 );
 
