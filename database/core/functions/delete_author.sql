@@ -1,5 +1,5 @@
-create or replace function core.delete_category(_invoker_id  bigint,
-                                                _category_id smallint)
+create or replace function core.delete_author(_invoker_id bigint,
+                                              _author_id  bigint)
 returns jsonb as $$
 begin
 
@@ -17,20 +17,20 @@ begin
   end if;
 
   if not exists(select 1
-                from core.categories c
-                where c.id = _category_id)
+                from core.authors a
+                where a.id = _author_id)
   then
     return jsonb_build_object(
       'status', 1,
       'details', jsonb_build_object(
-        'message', 'Category not found.',
+        'message', 'Author not found.',
         'code', 'NOT_FOUND'
       )
     );
   end if;
 
-  delete from main.categories c
-  where c.id = _category_id;
+  delete from main.authors a
+  where a.id = _author_id;
 
   return jsonb_build_object('status', 0);
 
@@ -42,6 +42,6 @@ exception
 end;
 $$ language plpgsql volatile strict security definer;
 
-alter function core.delete_category(bigint, smallint) owner to postgres;
-grant execute on function core.delete_category(bigint, smallint) to postgres, web;
-revoke all on function core.delete_category(bigint, smallint) from public;
+alter function core.delete_author(bigint, bigint) owner to postgres;
+grant execute on function core.delete_author(bigint, bigint) to postgres, web;
+revoke all on function core.delete_author(bigint, bigint) from public;
