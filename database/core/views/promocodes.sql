@@ -4,6 +4,7 @@ select
   id,
   promocode,
   created_at,
+  updated_at,
   payload,
   usage_count,
   ending_at
