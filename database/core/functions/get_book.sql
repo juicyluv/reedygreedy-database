@@ -7,6 +7,7 @@ create or replace function core.get_book(_book_id         bigint,
   out                                    author_id        bigint,
   out                                    author_name      text,
   out                                    pages            smallint,
+  out                                    language         text,
   out                                    description      text,
   out                                    created_at       timestamptz,
   out                                    updated_at       timestamptz,
@@ -23,6 +24,7 @@ begin
     b.author_id,
     a.name,
     b.pages,
+    l.language,
     b.description,
     b.created_at,
     b.updated_at
@@ -35,6 +37,7 @@ begin
     author_id,
     author_name,
     pages,
+    language,
     description,
     created_at,
     updated_at
@@ -43,6 +46,8 @@ begin
       on u.id = b.creator_id
     left join core.authors a
       on a.id = b.author_id
+    left join core.languages l
+      on l.id = b.language_id
   where b.id = _book_id;
 
   if not found then
