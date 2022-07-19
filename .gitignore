@@ -6,3 +6,5 @@ bin
 
 *.exe
 *.bin
+
+patch/init.sql

@@ -3,6 +3,7 @@ create or replace function core.create_book(_invoker_id  bigint,
                                             _price       decimal(10,2),
                                             _count       int,
                                             _author_id   bigint,
+                                            _isbn        text,
                                             _pages       smallint = null,
                                             _language_id smallint = null,
                                             _description text = null,
@@ -97,8 +98,8 @@ begin
     return;
   end if;
 
-  insert into main.books(id, title, price, count, creator_id, author_id, pages, language_id, description)
-  values(default, _title, _price, _count, _invoker_id, _author_id, _pages, _language_id, _description)
+  insert into main.books(id, title, price, count, creator_id, author_id, isbn, pages, language_id, description)
+  values(default, _title, _price, _count, _invoker_id, _author_id, _isbn, _pages, _language_id, _description)
   returning id into book_id;
 
   error := jsonb_build_object('status', 0);
@@ -112,6 +113,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.create_book(bigint, text, decimal(10,2), int, bigint, smallint, text) owner to postgres;
-grant execute on function core.create_book(bigint, text, decimal(10,2), int, bigint, smallint, text) to postgres, web;
-revoke all on function core.create_book(bigint, text, decimal(10,2), int, bigint, smallint, text) from public;
+alter function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, text) owner to postgres;
+grant execute on function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, text) to postgres, web;
+revoke all on function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, text) from public;

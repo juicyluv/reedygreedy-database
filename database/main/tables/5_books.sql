@@ -5,6 +5,7 @@ create table if not exists main.books(
   count       int           not null,
   creator_id  bigint        not null references main.users(id),
   author_id   bigint        not null references main.authors(id),
+  isbn        text          not null unique,
   pages       smallint,
   language_id smallint      references main.languages(id),
   description text,
