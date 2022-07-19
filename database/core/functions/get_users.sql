@@ -43,7 +43,7 @@ begin
 
              case when coalesce(_search, '') != ''
                then 'AND (u.username ILIKE ''%'' || $1 || ''%''
-                          OR a.name ILIKE ''%'' || $1 || ''%'') '
+                          OR u.name ILIKE ''%'' || $1 || ''%'') '
              else '' end ||
 
             core.order_by(_sort) ||
