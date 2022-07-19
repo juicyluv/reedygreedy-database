@@ -12,18 +12,18 @@ begin
 
   foreach _element in array _sort loop
     _sqlstr = _sqlstr ||
-      case when _sqlstr != ''
+      case when _sqlstr != 'ORDER BY '
       then ', ' else '' end ||
-
-      quote_ident(trim(both from _element)) ||
 
       case when left(_element, 1) not in ('+', '-') then
         _element
       else right(_element, length(_element) - 1) end ||
 
-      case when left(_element, 1) = '-' then
+      case when left(_element, 1) = '+' then
         ' ASC'
       else ' DESC' end;
   end loop;
+
+  return _sqlstr;
 end;
 $$ language plpgsql stable security definer;
