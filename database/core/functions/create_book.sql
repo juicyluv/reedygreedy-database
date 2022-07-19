@@ -4,6 +4,7 @@ create or replace function core.create_book(_invoker_id  bigint,
                                             _count       int,
                                             _author_id   bigint,
                                             _pages       smallint = null,
+                                            _language_id smallint = null,
                                             _description text = null,
   out                                       book_id      bigint,
   out                                       error        jsonb)
@@ -82,8 +83,22 @@ begin
     return;
   end if;
 
-  insert into main.books(id, title, price, count, creator_id, author_id, pages, description)
-  values(default, _title, _price, _count, _invoker_id, _author_id, _pages, _description)
+  if not exists(select 1
+                from core.languages l
+                where l.id = _language_id)
+  then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Language not found.',
+        'code', 'NOT_FOUND'
+        )
+      );
+    return;
+  end if;
+
+  insert into main.books(id, title, price, count, creator_id, author_id, pages, language_id, description)
+  values(default, _title, _price, _count, _invoker_id, _author_id, _pages, _language_id, _description)
   returning id into book_id;
 
   error := jsonb_build_object('status', 0);

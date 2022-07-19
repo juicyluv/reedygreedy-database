@@ -8,6 +8,7 @@ select
   author_id,
   creator_id,
   pages,
+  language_id,
   description,
   created_at,
   updated_at

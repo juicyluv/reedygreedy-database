@@ -11,6 +11,7 @@ create or replace function core.get_books(_search          text = null,
   out                                     author_id        bigint,
   out                                     author_name      text,
   out                                     pages            smallint,
+  out                                     language         text,
   out                                     description      text,
   out                                     created_at       timestamptz,
   out                                     updated_at       timestamptz,
@@ -30,6 +31,7 @@ begin
                              b.author_id   AS author_id,
                              a.name        AS author_name,
                              b.pages       AS pages,
+                             l.language    AS language,
                              b.description AS description,
                              b.created_at  AS created_at,
                              b.updated_at  AS updated_at,
@@ -39,6 +41,8 @@ begin
                                ON u.id = b.creator_id
                              LEFT JOIN main.authors a
                                ON a.id = b.author_id
+                             LEFT JOIN main.languages l
+                               ON l.id = b.language_id
                            WHERE 1 = 1 ' ||
 
              case when coalesce(_search, '') != ''
@@ -60,6 +64,7 @@ begin
               NULL::BIGINT,
               NULL::TEXT,
               NULL::SMALLINT,
+              NULL::TEXT,
               NULL::TEXT,
               NULL::TIMESTAMPTZ,
               NULL::TIMESTAMPTZ,
@@ -93,6 +98,7 @@ exception
                                    null::bigint,
                                    null::text,
                                    null::smallint,
+                                   null::text,
                                    null::text,
                                    null::timestamptz,
                                    null::timestamptz,
