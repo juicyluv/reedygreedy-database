@@ -18,24 +18,26 @@ begin
     u1.username,
     u1.email,
     u1.payload,
+    u1.name,
+    t.timezone,
     u1.creator_id,
     u2.username,
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
-    u1.disable_reason,
-    l.language
+    u1.disable_reason
   into
     username,
     email,
     payload,
     name,
+    timezone,
     creator_id,
+    creator_username,
     created_at,
     updated_at,
     disabled_at,
-    disable_reason,
-    language
+    disable_reason
   from core.users u1
     left join core.users u2
       on u2.id = u1.creator_id
@@ -56,10 +58,10 @@ begin
 
   error := jsonb_build_object('status', 0);
 
-exception
-  when others then
-
-    error := jsonb_build_object('status', -1);
+-- exception
+--   when others then
+--
+--     error := jsonb_build_object('status', -1);
 
 end;
 $$ language plpgsql stable security definer;
@@ -77,7 +79,7 @@ create or replace function core.get_user(_login           text,
   out                                    email            text,
   out                                    payload          jsonb,
   out                                    name             text,
-  out                                    language         text,
+  out                                    timezone         text,
   out                                    creator_id       bigint,
   out                                    creator_username text,
   out                                    created_at       timestamptz,
@@ -93,25 +95,27 @@ begin
     u1.username,
     u1.email,
     u1.payload,
+    u1.name,
+    t.timezone,
     u1.creator_id,
     u2.username,
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
-    u1.disable_reason,
-    l.language
+    u1.disable_reason
   into
     user_id,
     username,
     email,
     payload,
     name,
+    timezone,
     creator_id,
+    creator_username,
     created_at,
     updated_at,
     disabled_at,
-    disable_reason,
-    language
+    disable_reason
   from core.users u1
     left join core.users u2
       on u2.id = u1.creator_id
