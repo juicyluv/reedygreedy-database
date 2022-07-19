@@ -4,6 +4,7 @@ create or replace function core.update_book(_invoker_id  bigint,
                                             _price       decimal(10,2) = null,
                                             _count       int = null,
                                             _author_id   bigint = null,
+                                            _language_id smallint = null,
                                             _description text = null)
 returns jsonb as $$
 declare
@@ -105,19 +106,33 @@ begin
       );
   end if;
 
+  if _language_id is not null and not exists(select 1
+                from core.languages l
+                where l.id = _language_id)
+  then
+    return jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Language not found.',
+        'code', 'NOT_FOUND'
+        )
+      );
+  end if;
+
   _query := case when _title is null then '' else 'title = $1,' end ||
             case when _price is null then '' else 'price = $2,' end ||
             case when _count is null then '' else 'count = $3,' end ||
             case when _author_id is null then '' else 'author_id = $4,' end ||
             case when _description is null then '' else 'description = $5,' end ||
+            case when _language_id is null then '' else 'language_id = $6,' end ||
             'updated_at = now() ';
 
   _sqlstr := format('UPDATE main.books ' ||
                     'SET %s ' ||
-                    'WHERE id = $6', left(_query, length(_query) - 1));
+                    'WHERE id = $7', left(_query, length(_query) - 1));
 
   execute _sqlstr
-  using _title, _price, _count, _author_id, _description, _book_id;
+  using _title, _price, _count, _author_id, _description, _language_id, _book_id;
 
   return jsonb_build_object('status', 0);
 
@@ -129,6 +144,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.update_book(bigint, bigint, text, decimal(10,2), int, bigint, text) owner to postgres;
-grant execute on function core.update_book(bigint, bigint, text, decimal(10,2), int, bigint, text) to postgres, web;
-revoke all on function core.update_book(bigint, bigint, text, decimal(10,2), int, bigint, text) from public;
+alter function core.update_book(bigint, bigint, text, decimal(10,2), int, bigint, smallint, text) owner to postgres;
+grant execute on function core.update_book(bigint, bigint, text, decimal(10,2), int, bigint, smallint, text) to postgres, web;
+revoke all on function core.update_book(bigint, bigint, text, decimal(10,2), int, bigint, smallint, text) from public;

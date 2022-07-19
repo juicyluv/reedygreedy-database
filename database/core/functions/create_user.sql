@@ -1,11 +1,12 @@
-create or replace function core.create_user(_invoker_id bigint,
-                                            _username   text,
-                                            _email      text,
-                                            _password   text,
-                                            _name       text = null,
-                                            _payload    jsonb = null,
-  out                                       user_id     bigint,
-  out                                       error       jsonb)
+create or replace function core.create_user(_invoker_id  bigint,
+                                            _username    text,
+                                            _email       text,
+                                            _password    text,
+                                            _timezone_id smallint,
+                                            _name        text = null,
+                                            _payload     jsonb = null,
+  out                                       user_id      bigint,
+  out                                       error        jsonb)
 as $$
 begin
 
@@ -18,6 +19,20 @@ begin
       'details', jsonb_build_object(
         'message', 'Invoker not found.',
         'code', 'UNAUTHORIZED'
+      )
+    );
+    return;
+  end if;
+
+  if not exists(select 1
+                from core.timezones t
+                where t.id = _timezone_id)
+  then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Timezone not found.',
+        'code', 'NOT_FOUND'
       )
     );
     return;
@@ -62,8 +77,8 @@ begin
     return;
   end if;
 
-  insert into main.users(id, username, email, password, creator_id, name, payload)
-  values(default, _username, _email, _password, _invoker_id, _name, _payload)
+  insert into main.users(id, username, email, password, creator_id, name, payload, timezone_id)
+  values(default, _username, _email, _password, _invoker_id, _name, _payload, _timezone_id)
   returning id into user_id;
 
   error := jsonb_build_object('status', 0);
