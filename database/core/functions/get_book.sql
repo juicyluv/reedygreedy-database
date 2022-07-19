@@ -6,6 +6,7 @@ create or replace function core.get_book(_book_id         bigint,
   out                                    creator_username text,
   out                                    author_id        bigint,
   out                                    author_name      text,
+  out                                    pages            smallint,
   out                                    description      text,
   out                                    created_at       timestamptz,
   out                                    updated_at       timestamptz,
@@ -21,6 +22,7 @@ begin
     u.username,
     b.author_id,
     a.name,
+    b.pages,
     b.description,
     b.created_at,
     b.updated_at
@@ -32,6 +34,7 @@ begin
     creator_username,
     author_id,
     author_name,
+    pages,
     description,
     created_at,
     updated_at
