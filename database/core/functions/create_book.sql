@@ -3,6 +3,7 @@ create or replace function core.create_book(_invoker_id  bigint,
                                             _price       decimal(10,2),
                                             _count       int,
                                             _author_id   bigint,
+                                            _pages       smallint = null,
                                             _description text = null,
   out                                       book_id      bigint,
   out                                       error        jsonb)
@@ -56,6 +57,17 @@ begin
     return;
   end if;
 
+  if _pages is not null and _pages <= 0 then
+    error := jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Page count must be a positive number.',
+        'code', 'INVALID_ARGUMENT'
+      )
+    );
+    return;
+  end if;
+
   if not exists(select 1
                 from core.authors a
                 where a.id = _author_id)
@@ -70,8 +82,8 @@ begin
     return;
   end if;
 
-  insert into main.books(id, title, price, count, creator_id, author_id, description)
-  values(default, _title, _price, _count, _invoker_id, _author_id, _description)
+  insert into main.books(id, title, price, count, creator_id, author_id, pages, description)
+  values(default, _title, _price, _count, _invoker_id, _author_id, _pages, _description)
   returning id into book_id;
 
   error := jsonb_build_object('status', 0);
@@ -85,6 +97,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.create_book(bigint, text, decimal(10,2), int, bigint, text) owner to postgres;
-grant execute on function core.create_book(bigint, text, decimal(10,2), int, bigint, text) to postgres, web;
-revoke all on function core.create_book(bigint, text, decimal(10,2), int, bigint, text) from public;
+alter function core.create_book(bigint, text, decimal(10,2), int, bigint, smallint, text) owner to postgres;
+grant execute on function core.create_book(bigint, text, decimal(10,2), int, bigint, smallint, text) to postgres, web;
+revoke all on function core.create_book(bigint, text, decimal(10,2), int, bigint, smallint, text) from public;

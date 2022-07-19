@@ -7,6 +7,7 @@ select
   count,
   author_id,
   creator_id,
+  pages,
   description,
   created_at,
   updated_at
