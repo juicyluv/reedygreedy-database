@@ -10,6 +10,10 @@ patch:
 drop:
 	cat patch/drop.sql | psql -U postgres
 
+.PHONY:feed
+feed:
+	cat patch\feed.sql | psql -U postgres -d reedygreedy
+
 .PHONY:repatch
 repatch: drop patch
 
