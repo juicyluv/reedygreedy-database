@@ -7,6 +7,7 @@ create or replace function core.get_users(_search          text = null,
   out                                     email            text,
   out                                     payload          jsonb,
   out                                     name             text,
+  out                                     timezone         text,
   out                                     creator_id       bigint,
   out                                     creator_username text,
   out                                     created_at       timestamptz,
@@ -25,6 +26,7 @@ begin
                              u.email          AS email,
                              u.payload        AS payload,
                              u.name           AS name,
+                             t.timezone       AS timezone,
                              u.creator_id     AS creator_id,
                              u2.username      AS creator_username,
                              u.created_at     AS created_at,
@@ -35,6 +37,8 @@ begin
                            FROM core.users u
                              LEFT JOIN main.users u2
                                ON u2.id = u.creator_id
+                             LEFT JOIN main.timezones t
+                               ON t.id = u.timezone_id
                            WHERE 1 = 1 ' ||
 
              case when coalesce(_search, '') != ''
@@ -51,6 +55,7 @@ begin
               NULL::TEXT,
               NULL::TEXT,
               NULL::JSONB,
+              NULL::TEXT,
               NULL::TEXT,
               NULL::BIGINT,
               NULL::TEXT,
@@ -83,6 +88,7 @@ exception
                                    null::text,
                                    null::text,
                                    null::jsonb,
+                                   null::text,
                                    null::text,
                                    null::bigint,
                                    null::text,

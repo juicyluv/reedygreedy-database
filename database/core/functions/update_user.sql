@@ -4,6 +4,7 @@ create or replace function core.update_user(_invoker_id  bigint,
                                             _password    text = null,
                                             _email       text = null,
                                             _name        text = null,
+                                            _timezone_id smallint = null,
                                             _payload     jsonb = null)
 returns jsonb as $$
 declare
@@ -42,6 +43,7 @@ begin
      and _email is null
      and _name is null
      and _payload is null
+     and _timezone_id is null
   then
     return jsonb_build_object(
       'status', 1,
@@ -112,19 +114,33 @@ begin
     end if;
   end if;
 
+  if _timezone_id is not null and not exists(select 1
+                from core.timezones t
+                where t.id = _timezone_id)
+  then
+    return jsonb_build_object(
+      'status', 1,
+      'details', jsonb_build_object(
+        'message', 'Timezone not found.',
+        'code', 'NOT_FOUND'
+        )
+      );
+  end if;
+
   _query := case when _username is null then '' else 'username = $1,' end ||
             case when _password is null then '' else 'password = $2,' end ||
             case when _email    is null then '' else 'email = $3,' end ||
             case when _name     is null then '' else 'name = $4,' end ||
             case when _payload  is null then '' else 'payload = $5,' end ||
+            case when _timezone_id is null then '' else 'timezone_id = $6,' end ||
             'updated_at = now() ';
 
   _sqlstr := format('UPDATE main.users ' ||
                     'SET %s ' ||
-                    'WHERE id = $6', left(_query, length(_query) - 1));
+                    'WHERE id = $7', left(_query, length(_query) - 1));
 
   execute _sqlstr
-  using _username, _password, _email, _name, _payload, _user_id;
+  using _username, _password, _email, _name, _payload, _timezone_id, _user_id;
 
   return jsonb_build_object('status', 0);
 
@@ -136,6 +152,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.update_user(bigint, bigint, text, text, text, text, jsonb) owner to postgres;
-grant execute on function core.update_user(bigint, bigint, text, text, text, text, jsonb) to postgres, web;
-revoke all on function core.update_user(bigint, bigint, text, text, text, text, jsonb) from public;
+alter function core.update_user(bigint, bigint, text, text, text, text, smallint, jsonb) owner to postgres;
+grant execute on function core.update_user(bigint, bigint, text, text, text, text, smallint, jsonb) to postgres, web;
+revoke all on function core.update_user(bigint, bigint, text, text, text, text, smallint, jsonb) from public;

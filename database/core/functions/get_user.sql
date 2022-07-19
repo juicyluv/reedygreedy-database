@@ -3,6 +3,7 @@ create or replace function core.get_user(_user_id         bigint,
   out                                    email            text,
   out                                    payload          jsonb,
   out                                    name             text,
+  out                                    timezone         text,
   out                                    creator_id       bigint,
   out                                    creator_username text,
   out                                    created_at       timestamptz,
@@ -22,7 +23,8 @@ begin
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
-    u1.disable_reason
+    u1.disable_reason,
+    l.language
   into
     username,
     email,
@@ -32,10 +34,13 @@ begin
     created_at,
     updated_at,
     disabled_at,
-    disable_reason
+    disable_reason,
+    language
   from core.users u1
     left join core.users u2
       on u2.id = u1.creator_id
+    left join core.timezones t
+      on t.id = u1.timezone_id
   where u1.id = _user_id;
 
   if not found then
@@ -72,6 +77,7 @@ create or replace function core.get_user(_login           text,
   out                                    email            text,
   out                                    payload          jsonb,
   out                                    name             text,
+  out                                    language         text,
   out                                    creator_id       bigint,
   out                                    creator_username text,
   out                                    created_at       timestamptz,
@@ -92,7 +98,8 @@ begin
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
-    u1.disable_reason
+    u1.disable_reason,
+    l.language
   into
     user_id,
     username,
@@ -103,10 +110,13 @@ begin
     created_at,
     updated_at,
     disabled_at,
-    disable_reason
+    disable_reason,
+    language
   from core.users u1
     left join core.users u2
       on u2.id = u1.creator_id
+    left join core.timezones t
+        on t.id = u1.timezone_id
   where (lower(u1.email) = lower(_login) or lower(u1.username) = lower(_login))
         and u1.password = _password;
 

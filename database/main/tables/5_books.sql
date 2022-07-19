@@ -6,7 +6,7 @@ create table if not exists main.books(
   creator_id  bigint        not null references main.users(id),
   author_id   bigint        not null references main.authors(id),
   pages       smallint,
-  language_id smallint,
+  language_id smallint      references main.languages(id),
   description text,
   created_at  timestamptz   default now(),
   updated_at  timestamptz
