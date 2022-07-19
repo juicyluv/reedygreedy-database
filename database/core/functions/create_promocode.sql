@@ -64,8 +64,8 @@ begin
     return;
   end if;
 
-  insert into main.promocodes(id, promocode, payload, usage_count, ending_at)
-  values(default, _promocode, _payload, _usage_count, _ending_at)
+  insert into main.promocodes(id, promocode, creator_id, payload, usage_count, ending_at)
+  values(default, _promocode, _invoker_id, _payload, _usage_count, _ending_at)
   returning id into promocode_id;
 
   error := jsonb_build_object('status', 0);
