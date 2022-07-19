@@ -1,6 +1,6 @@
 create table if not exists main.categories(
   id          smallserial  primary key,
-  name        text         not null,
+  name        text         not null unique,
   created_at  timestamptz  default now(),
   updated_at  timestamptz
 );
