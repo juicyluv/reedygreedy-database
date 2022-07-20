@@ -1,5 +1,6 @@
 create or replace function core.get_book_review(_review_id       bigint,
   out                                           book_id          bigint,
+  out                                           book_title       text,
   out                                           creator_id       bigint,
   out                                           creator_username text,
   out                                           review           smallint,
@@ -12,6 +13,7 @@ begin
 
   select
     br.book_id,
+    b.title,
     br.creator_id,
     u.username,
     br.review,
@@ -20,6 +22,7 @@ begin
     br.comment
   into
     book_id,
+    book_title,
     creator_id,
     creator_username,
     review,
@@ -28,6 +31,8 @@ begin
   from core.book_reviews br
     left join core.users u
       on u.id = br.creator_id
+    left join core.books b
+      on b.id = br.book_id
   where br.id = _review_id;
 
   if not found then
