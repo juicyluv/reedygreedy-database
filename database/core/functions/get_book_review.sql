@@ -27,7 +27,8 @@ begin
     creator_username,
     review,
     created_at,
-    updated_at
+    updated_at,
+    comment
   from core.book_reviews br
     left join core.users u
       on u.id = br.creator_id
