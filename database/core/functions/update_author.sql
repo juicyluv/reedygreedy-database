@@ -70,7 +70,7 @@ begin
             case when _description is null then '' else 'description = $2,' end ||
             'updated_at = now() ';
 
-  _sqlstr := format('UPDATE main.books ' ||
+  _sqlstr := format('UPDATE main.authors ' ||
                     'SET %s ' ||
                     'WHERE id = $3', left(_query, length(_query) - 1));
 
