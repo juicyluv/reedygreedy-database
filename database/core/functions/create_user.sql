@@ -92,6 +92,6 @@ exception
 end;
 $$ language plpgsql volatile security definer;
 
-alter function core.create_user(bigint, text, text, text, text, jsonb) owner to postgres;
-grant execute on function core.create_user(bigint, text, text, text, text, jsonb) to postgres, web;
-revoke all on function core.create_user(bigint, text, text, text, text, jsonb) from public;
+alter function core.create_user(bigint, text, text, text, smallint, text, jsonb) owner to postgres;
+grant execute on function core.create_user(bigint, text, text, text, smallint, text, jsonb) to postgres, web;
+revoke all on function core.create_user(bigint, text, text, text, smallint, text, jsonb) from public;

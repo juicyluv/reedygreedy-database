@@ -113,6 +113,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, text) owner to postgres;
-grant execute on function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, text) to postgres, web;
-revoke all on function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, text) from public;
+alter function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, smallint, text) owner to postgres;
+grant execute on function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, smallint, text) to postgres, web;
+revoke all on function core.create_book(bigint, text, decimal(10,2), int, bigint, text, smallint, smallint, text) from public;

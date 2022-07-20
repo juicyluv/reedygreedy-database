@@ -62,7 +62,7 @@ begin
             case when _comment is null then '' else 'comment = $2,' end ||
             'updated_at = now() ';
 
-  _sqlstr := format('UPDATE main.categories ' ||
+  _sqlstr := format('UPDATE main.book_reviews ' ||
                     'SET %s ' ||
                     'WHERE id = $3', left(_query, length(_query) - 1));
 
