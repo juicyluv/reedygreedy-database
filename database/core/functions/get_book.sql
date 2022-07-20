@@ -1,7 +1,7 @@
 create or replace function core.get_book(_book_id         bigint,
   out                                    title            text,
-  out                                    price            int,
-  out                                    count            decimal(10,2),
+  out                                    count            int,
+  out                                    price            decimal(10,2),
   out                                    creator_id       bigint,
   out                                    creator_username text,
   out                                    author_id        bigint,
@@ -18,8 +18,8 @@ begin
 
   select
     b.title,
-    b.price,
     b.count,
+    b.price,
     b.creator_id,
     u.username,
     b.author_id,
@@ -32,12 +32,13 @@ begin
     b.updated_at
   into
     title,
-    price,
     count,
+    price,
     creator_id,
     creator_username,
     author_id,
     author_name,
+    isbn,
     pages,
     language,
     description,
@@ -65,10 +66,10 @@ begin
 
   error := jsonb_build_object('status', 0);
 
-exception
-  when others then
-
-    error := jsonb_build_object('status', -1);
+-- exception
+--   when others then
+--
+--     error := jsonb_build_object('status', -1);
 
 end;
 $$ language plpgsql stable security definer;
