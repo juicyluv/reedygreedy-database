@@ -1,16 +1,19 @@
 create or replace function core.get_category(_category_id smallint,
   out                                        name         text,
   out                                        created_at   timestamptz,
+  out                                        updated_at   timestamptz,
   out                                        error        jsonb)
 as $$
 begin
 
   select
     c.name,
-    c.created_at
+    c.created_at,
+    c.updated_at
   into
     name,
-    created_at
+    created_at,
+    updated_at
   from core.categories c
   where c.id = _category_id;
 
@@ -18,7 +21,7 @@ begin
     error := jsonb_build_object(
       'status', 1,
       'details', jsonb_build_object(
-        'message', 'Book not found.',
+        'message', 'Category not found.',
         'code', 'NOT_FOUND'
       )
     );
