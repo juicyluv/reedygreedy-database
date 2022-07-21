@@ -5,6 +5,7 @@ create table if not exists main.users(
   password       text        not null check(password != ''),
   creator_id     bigint      references main.users(id),
   timezone_id    smallint    not null references main.timezones(id),
+  role_id        smallint    not null references main.roles(id),
   name           text,
   payload        jsonb,
   created_at     timestamptz default now(),

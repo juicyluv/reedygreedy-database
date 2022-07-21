@@ -1,17 +1,20 @@
-create or replace function core.get_user(_user_id         bigint,
-  out                                    username         text,
-  out                                    email            text,
-  out                                    payload          jsonb,
-  out                                    name             text,
-  out                                    timezone         text,
-  out                                    creator_id       bigint,
-  out                                    creator_username text,
-  out                                    created_at       timestamptz,
-  out                                    updated_at       timestamptz,
-  out                                    disabled_at      timestamptz,
-  out                                    disable_reason   smallint,
-  out                                    last_login       timestamptz,
-  out                                    error            jsonb)
+create or replace function core.get_user(_user_id          bigint,
+  out                                    username          text,
+  out                                    email             text,
+  out                                    payload           jsonb,
+  out                                    name              text,
+  out                                    timezone          text,
+  out                                    creator_id        bigint,
+  out                                    creator_username  text,
+  out                                    role_id           smallint,
+  out                                    role_name         text,
+  out                                    role_access_level smallint,
+  out                                    created_at        timestamptz,
+  out                                    updated_at        timestamptz,
+  out                                    disabled_at       timestamptz,
+  out                                    disable_reason    smallint,
+  out                                    last_login        timestamptz,
+  out                                    error             jsonb)
 as $$
 begin
 
@@ -23,6 +26,9 @@ begin
     t.timezone,
     u1.creator_id,
     u2.username,
+    r.id,
+    r.name,
+    r.access_level,
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
@@ -36,6 +42,9 @@ begin
     timezone,
     creator_id,
     creator_username,
+    role_id,
+    role_name,
+    role_access_level,
     created_at,
     updated_at,
     disabled_at,
@@ -46,6 +55,8 @@ begin
       on u2.id = u1.creator_id
     left join core.timezones t
       on t.id = u1.timezone_id
+    left join core.roles r
+      on u1.role_id = r.id
   where u1.id = _user_id;
 
   if not found then
@@ -75,22 +86,25 @@ revoke all on function core.get_user(bigint) from public;
 
 -------------------------------------------------------------------------------------------------------
 
-create or replace function core.get_user(_login           text,
-                                         _password        text,
-  out                                    user_id          bigint,
-  out                                    username         text,
-  out                                    email            text,
-  out                                    payload          jsonb,
-  out                                    name             text,
-  out                                    timezone         text,
-  out                                    creator_id       bigint,
-  out                                    creator_username text,
-  out                                    created_at       timestamptz,
-  out                                    updated_at       timestamptz,
-  out                                    disabled_at      timestamptz,
-  out                                    disable_reason   smallint,
-  out                                    last_login       timestamptz,
-  out                                    error            jsonb)
+create or replace function core.get_user(_login            text,
+                                         _password         text,
+  out                                    user_id           bigint,
+  out                                    username          text,
+  out                                    email             text,
+  out                                    payload           jsonb,
+  out                                    name              text,
+  out                                    timezone          text,
+  out                                    creator_id        bigint,
+  out                                    creator_username  text,
+  out                                    role_id           smallint,
+  out                                    role_name         text,
+  out                                    role_access_level smallint,
+  out                                    created_at        timestamptz,
+  out                                    updated_at        timestamptz,
+  out                                    disabled_at       timestamptz,
+  out                                    disable_reason    smallint,
+  out                                    last_login        timestamptz,
+  out                                    error             jsonb)
 as $$
 begin
 
@@ -103,6 +117,9 @@ begin
     t.timezone,
     u1.creator_id,
     u2.username,
+    r.id,
+    r.name,
+    r.access_level,
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
@@ -117,6 +134,9 @@ begin
     timezone,
     creator_id,
     creator_username,
+    role_id,
+    role_name,
+    role_access_level,
     created_at,
     updated_at,
     disabled_at,

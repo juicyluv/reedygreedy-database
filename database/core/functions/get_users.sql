@@ -1,21 +1,24 @@
-create or replace function core.get_users(_search          text = null,
-                                          _page_size       int = 60,
-                                          _page            int = 1,
-                                          _sort            text[] = null,
-  out                                     user_id          bigint,
-  out                                     username         text,
-  out                                     email            text,
-  out                                     payload          jsonb,
-  out                                     name             text,
-  out                                     timezone         text,
-  out                                     creator_id       bigint,
-  out                                     creator_username text,
-  out                                     created_at       timestamptz,
-  out                                     updated_at       timestamptz,
-  out                                     disabled_at      timestamptz,
-  out                                     disable_reason   smallint,
-  out                                     last_login       timestamptz,
-  out                                     total            bigint)
+create or replace function core.get_users(_search           text = null,
+                                          _page_size        int = 60,
+                                          _page             int = 1,
+                                          _sort             text[] = null,
+  out                                     user_id           bigint,
+  out                                     username          text,
+  out                                     email             text,
+  out                                     payload           jsonb,
+  out                                     name              text,
+  out                                     timezone          text,
+  out                                     creator_id        bigint,
+  out                                     creator_username  text,
+  out                                     role_id           smallint,
+  out                                     role_name         text,
+  out                                     role_access_level smallint,
+  out                                     created_at        timestamptz,
+  out                                     updated_at        timestamptz,
+  out                                     disabled_at       timestamptz,
+  out                                     disable_reason    smallint,
+  out                                     last_login        timestamptz,
+  out                                     total             bigint)
 returns setof record as $$
 declare
   _sqlstr text;
@@ -30,6 +33,9 @@ begin
                              t.timezone       AS timezone,
                              u.creator_id     AS creator_id,
                              u2.username      AS creator_username,
+                             r.id             AS role_id,
+                             r.name           AS role_name,
+                             r.access_level   AS role_access_level,
                              u.created_at     AS created_at,
                              u.updated_at     AS updated_at,
                              u.disabled_at    AS disabled_at,
@@ -41,6 +47,8 @@ begin
                                ON u2.id = u.creator_id
                              LEFT JOIN main.timezones t
                                ON t.id = u.timezone_id
+                             LEFT JOIN main.roles r
+                               ON r.id = u.role_id
                            WHERE 1 = 1 ' ||
 
              case when coalesce(_search, '') != ''
@@ -61,6 +69,9 @@ begin
               NULL::TEXT,
               NULL::BIGINT,
               NULL::TEXT,
+              NULL::SMALLINT,
+              NULL::TEXT,
+              NULL::SMALLINT,
               NULL::TIMESTAMPTZ,
               NULL::TIMESTAMPTZ,
               NULL::TIMESTAMPTZ,
@@ -95,6 +106,9 @@ exception
                                    null::text,
                                    null::bigint,
                                    null::text,
+                                   null::smallint,
+                                   null::text,
+                                   null::smallint,
                                    null::timestamptz,
                                    null::timestamptz,
                                    null::timestamptz,
