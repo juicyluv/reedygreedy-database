@@ -11,6 +11,7 @@ create table if not exists main.users(
   updated_at     timestamptz,
   disabled_at    timestamptz,
   disable_reason smallint,
+  last_login     timestamptz,
   deleted_at     timestamptz
 );
 

@@ -14,6 +14,7 @@ create or replace function core.get_users(_search          text = null,
   out                                     updated_at       timestamptz,
   out                                     disabled_at      timestamptz,
   out                                     disable_reason   smallint,
+  out                                     last_login       timestamptz,
   out                                     total            bigint)
 returns setof record as $$
 declare
@@ -33,6 +34,7 @@ begin
                              u.updated_at     AS updated_at,
                              u.disabled_at    AS disabled_at,
                              u.disable_reason AS disable_reason,
+                             u.last_login     AS last_login,
                              NULL::BIGINT     AS total
                            FROM core.users u
                              LEFT JOIN main.users u2
@@ -63,6 +65,7 @@ begin
               NULL::TIMESTAMPTZ,
               NULL::TIMESTAMPTZ,
               NULL::SMALLINT,
+              NULL::TIMESTAMPTZ,
 
               (SELECT count(*)
                FROM tab)
@@ -96,6 +99,7 @@ exception
                                    null::timestamptz,
                                    null::timestamptz,
                                    null::smallint,
+                                   null::timestamptz,
                                    null::bigint))
 
     select *
