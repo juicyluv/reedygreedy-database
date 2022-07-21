@@ -10,6 +10,7 @@ create or replace function core.get_user(_user_id         bigint,
   out                                    updated_at       timestamptz,
   out                                    disabled_at      timestamptz,
   out                                    disable_reason   smallint,
+  out                                    last_login       timestamptz,
   out                                    error            jsonb)
 as $$
 begin
@@ -25,7 +26,8 @@ begin
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
-    u1.disable_reason
+    u1.disable_reason,
+    u1.last_login
   into
     username,
     email,
@@ -37,7 +39,8 @@ begin
     created_at,
     updated_at,
     disabled_at,
-    disable_reason
+    disable_reason,
+    last_login
   from core.users u1
     left join core.users u2
       on u2.id = u1.creator_id
@@ -86,6 +89,7 @@ create or replace function core.get_user(_login           text,
   out                                    updated_at       timestamptz,
   out                                    disabled_at      timestamptz,
   out                                    disable_reason   smallint,
+  out                                    last_login       timestamptz,
   out                                    error            jsonb)
 as $$
 begin
@@ -102,7 +106,8 @@ begin
     u1.created_at,
     u1.updated_at,
     u1.disabled_at,
-    u1.disable_reason
+    u1.disable_reason,
+    u1.last_login
   into
     user_id,
     username,
@@ -115,7 +120,8 @@ begin
     created_at,
     updated_at,
     disabled_at,
-    disable_reason
+    disable_reason,
+    last_login
   from core.users u1
     left join core.users u2
       on u2.id = u1.creator_id
