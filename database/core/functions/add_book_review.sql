@@ -11,13 +11,11 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    error := core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
     return;
   end if;
 
@@ -25,38 +23,43 @@ begin
                 from core.books b
                 where b.id = _book_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Book not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'BOOK_NOT_FOUND',
+      'Book not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 
   if exists(select 1
             from core.book_reviews br
             where br.creator_id = _invoker_id
-                  and br.book_id = _book_id)
+              and br.book_id = _book_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'You already added a review to this book.',
-        'code', 'OBJECT_DUPLICATE'
-        )
+    error := core.error_response(
+      'REVIEW_ALREADY_ADDED',
+      'Review is already added by user.',
+      'OBJECT_DUPLICATE'
       );
     return;
   end if;
 
-  if _review <=0 or _review > 5 then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Review must be between 0 and 5.',
-        'code', 'INVALID_ARGUMENT'
-        )
+  if _review <= 0 or _review > 5 then
+    error := core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Review value is out of range.',
+      'INVALID_ARGUMENT',
+      0, 5
+      );
+    return;
+  end if;
+
+  if _comment is not null and (length(_comment) < 4 or length(_comment) > 1024) then
+    error := core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Review comment is out of range.',
+      'INVALID_ARGUMENT',
+      4, 1024
       );
     return;
   end if;
@@ -69,7 +72,6 @@ begin
 
 exception
   when others then
-
     review_id := null;
     error := jsonb_build_object('status', -1);
 

@@ -60,22 +60,20 @@ begin
   where u1.id = _user_id;
 
   if not found then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'User not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'USER_NOT_FOUND',
+      'User not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 
   error := jsonb_build_object('status', 0);
 
--- exception
---   when others then
---
---     error := jsonb_build_object('status', -1);
+exception
+  when others then
+
+    error := jsonb_build_object('status', -1);
 
 end;
 $$ language plpgsql stable security definer;
@@ -151,13 +149,11 @@ begin
         and u1.password = _password;
 
   if not found then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'User not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'USER_NOT_FOUND',
+      'User not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 

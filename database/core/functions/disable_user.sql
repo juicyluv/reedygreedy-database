@@ -11,26 +11,22 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    return core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
   end if;
 
   if not exists(select 1
                 from core.users u
                 where u.id = _user_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'User not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    return core.error_response(
+      'USER_NOT_FOUND',
+      'User not found.',
+      'OBJECT_NOT_FOUND'
+      );
   end if;
 
   select
@@ -49,13 +45,11 @@ begin
       disable_reason = _disable_reason
     where id = _user_id;
   else
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'User already disabled.',
-        'code', 'OBJECT_DUPLICATE'
-      )
-    );
+    return core.error_response(
+      'USER_ALREADY_DISABLED',
+      'User already disabled.',
+      'OBJECT_DUPLICATE'
+      );
   end if;
 
   return jsonb_build_object('status', 0);

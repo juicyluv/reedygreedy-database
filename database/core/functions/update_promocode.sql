@@ -14,25 +14,21 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    return core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
   end if;
 
   if not exists(select 1
                 from core.promocodes p
                 where p.id = _promocode_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Promocode not found.',
-        'code', 'NOT_FOUND'
-        )
+    return core.error_response(
+      'PROMOCODE_NOT_FOUND',
+      'Promocode not found.',
+      'OBJECT_NOT_FOUND'
       );
   end if;
 
@@ -41,53 +37,37 @@ begin
      and _usage_count is null
      and _ending_at is null
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Nothing to update.',
-        'code', 'EMPTY_QUERY'
-      )
-    );
+    return core.error_response(
+      'EMPTY_QUERY',
+      'Nothing to update.',
+      'INVALID_ARGUMENT'
+      );
   end if;
 
-  if _promocode is not null then
-    if _promocode = '' then
-      return jsonb_build_object(
-        'status', 1,
-        'details', jsonb_build_object(
-          'message', 'Promocode cannot be empty.',
-          'code', 'INVALID_ARGUMENT'
-        )
+  if _promocode is not null and (length(_promocode) < 1 or length(_promocode) > 24) then
+    return core.error_response(
+      'PROMOCODE_OUT_OF_RANGE',
+      'Promocode is out of range.',
+      'INVALID_ARGUMENT',
+      1, 24
       );
-    elseif length(_promocode) > 30 then
-      return jsonb_build_object(
-        'status', 1,
-        'details', jsonb_build_object(
-          'message', 'Promocode is out of range.',
-          'code', 'INVALID_ARGUMENT'
-        )
-      );
-    end if;
   end if;
 
   if _usage_count is not null and _usage_count <= 0 then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Usage count must be positive number.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Promocode usage count is out of range.',
+      'INVALID_ARGUMENT',
+      1
+      );
   end if;
 
   if _ending_at is not null and _ending_at < now() then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Ending at cannot be in the past.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Promocode ending time cannot be in the past.',
+      'INVALID_ARGUMENT'
+      );
   end if;
 
   _query := case when _promocode is null then '' else 'promocode = $1,' end ||

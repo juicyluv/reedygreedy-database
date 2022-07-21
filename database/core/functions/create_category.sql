@@ -9,32 +9,20 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    error := core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
     return;
   end if;
 
-  if _name = '' then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Name cannot be empty.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
-    return;
-  elseif length(_name) > 30 then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Name is out of range.',
-        'code', 'INVALID_ARGUMENT'
-      )
+  if length(_name) < 1 or length(_name) > 64 then
+    error := core.error_response(
+       'VALUE_OUT_OF_RANGE',
+       'Category name is out of range.',
+       'INVALID_ARGUMENT',
+       1, 64
     );
     return;
   end if;

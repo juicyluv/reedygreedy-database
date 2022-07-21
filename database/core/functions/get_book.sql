@@ -54,13 +54,11 @@ begin
   where b.id = _book_id;
 
   if not found then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Book not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'BOOK_NOT_FOUND',
+      'Book not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 

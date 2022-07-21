@@ -16,57 +16,51 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
+    error := core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
+    return;
+  end if;
+
+  if length(_title) < 1 or length(_title) > 256 then
+    error := core.error_response(
+       'VALUE_OUT_OF_RANGE',
+       'Book title is out of range.',
+       'INVALID_ARGUMENT',
+       1, 256
     );
     return;
   end if;
 
-  if _title = '' then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Title cannot be empty.',
-        'code', 'INVALID_ARGUMENT'
-      )
+  if _price < 0.1 then
+    error := core.error_response(
+       'VALUE_OUT_OF_RANGE',
+       'Book price is out of range.',
+       'INVALID_ARGUMENT',
+       0.1
     );
     return;
   end if;
 
-  if _price <= 0 then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Price must be a positive number.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
-    return;
-  end if;
-
-  if _count <= 0 then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Count must be a positive number.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+  if _count < 0 then
+    error := core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Book count is out of range.',
+      'INVALID_ARGUMENT',
+      0
+      );
     return;
   end if;
 
   if _pages is not null and _pages <= 0 then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Page count must be a positive number.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+    error := core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Book count is out of range.',
+      'INVALID_ARGUMENT',
+      1
+      );
     return;
   end if;
 
@@ -74,12 +68,10 @@ begin
                 from core.authors a
                 where a.id = _author_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Author not found.',
-        'code', 'NOT_FOUND'
-        )
+    error := core.error_response(
+      'AUTHOR_NOT_FOUND',
+      'Author not found.',
+      'OBJECT_NOT_FOUND'
       );
     return;
   end if;
@@ -88,12 +80,10 @@ begin
                 from core.languages l
                 where l.id = _language_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Language not found.',
-        'code', 'NOT_FOUND'
-        )
+    error := core.error_response(
+      'LANGUAGE_NOT_FOUND',
+      'Language not found.',
+      'OBJECT_NOT_FOUND'
       );
     return;
   end if;

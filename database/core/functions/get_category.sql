@@ -18,13 +18,11 @@ begin
   where c.id = _category_id;
 
   if not found then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Category not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'CATEGORY_NOT_FOUND',
+      'Category not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 

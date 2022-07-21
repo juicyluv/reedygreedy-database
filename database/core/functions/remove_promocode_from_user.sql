@@ -8,39 +8,33 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    return core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
   end if;
 
   if not exists(select 1
                 from core.users u
                 where u.id = _user_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'User not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    return core.error_response(
+      'USER_NOT_FOUND',
+      'User not found.',
+      'OBJECT_NOT_FOUND'
+      );
   end if;
 
   if not exists(select 1
                 from core.promocodes p
                 where p.id = _promocode_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Promocode not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    return core.error_response(
+      'PROMOCODE_NOT_FOUND',
+      'Promocode not found.',
+      'OBJECT_NOT_FOUND'
+      );
   end if;
 
   if not exists(select 1
@@ -48,12 +42,10 @@ begin
                 where up.user_id = _user_id
                   and up.promocode_id = _promocode_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Promocode is not linked to user.',
-        'code', 'OBJECT_DEPENDENCY'
-        )
+    return core.error_response(
+      'PROMOCODE_DOES_NOT_BELONG_TO_USER',
+      'Promocode does not belong to user.',
+      'OBJECT_DEPENDENCY'
       );
   end if;
 
