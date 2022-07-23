@@ -29,13 +29,11 @@ begin
   where a.id = _author_id;
 
   if not found then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Author not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'AUTHOR_NOT_FOUND',
+      'Author not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 

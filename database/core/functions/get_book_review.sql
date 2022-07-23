@@ -37,13 +37,11 @@ begin
   where br.id = _review_id;
 
   if not found then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Review not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    error := core.error_response(
+      'REVIEW_NOT_FOUND',
+      'Review not found.',
+      'OBJECT_NOT_FOUND'
+      );
     return;
   end if;
 

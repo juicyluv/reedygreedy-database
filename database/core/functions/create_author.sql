@@ -10,24 +10,31 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
+    error := core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
+    return;
+  end if;
+
+  if length(_name) < 4 or length(_name) > 100 then
+    error := core.error_response(
+       'VALUE_OUT_OF_RANGE',
+       'Author name is out of range.',
+       'INVALID_ARGUMENT',
+       4, 100
     );
     return;
   end if;
 
-  if _name = '' then
-    error := jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Title cannot be empty.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+  if _description is not null and (length(_description) < 30 or length(_description) > 4096) then
+    error := core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Author description is out of range.',
+      'INVALID_ARGUMENT',
+      30, 4096
+      );
     return;
   end if;
 

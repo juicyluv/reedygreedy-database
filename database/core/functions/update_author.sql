@@ -12,58 +12,50 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    return core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
   end if;
 
   if not exists(select 1
                 from core.authors a
                 where a.id = _author_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Author not found.',
-        'code', 'NOT_FOUND'
-        )
+    return core.error_response(
+      'AUTHOR_NOT_FOUND',
+      'Author not found.',
+      'OBJECT_NOT_FOUND'
       );
   end if;
 
   if _name is null
      and _description is null
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Nothing to update.',
-        'code', 'EMPTY_QUERY'
-      )
-    );
+    return core.error_response(
+      'EMPTY_QUERY',
+      'Nothing to update.',
+      'INVALID_ARGUMENT'
+      );
   end if;
 
-  if _name is not null then
-    if _name = '' then
-      return jsonb_build_object(
-        'status', 1,
-        'details', jsonb_build_object(
-          'message', 'Name cannot be empty.',
-          'code', 'INVALID_ARGUMENT'
-        )
+  if _name is not null and (length(_name) < 4 or length(_name) > 100) then
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Author name is out of range.',
+      'INVALID_ARGUMENT',
+      4, 100
       );
-    elseif length(_name) > 100 then
-      return jsonb_build_object(
-        'status', 1,
-        'details', jsonb_build_object(
-          'message', 'Name is out of range.',
-          'code', 'INVALID_ARGUMENT'
-        )
+  end if;
+
+  if _description is not null and (length(_description) < 30 or length(_description) > 4096) then
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Author description is out of range.',
+      'INVALID_ARGUMENT',
+      30, 4096
       );
-    end if;
   end if;
 
   _query := case when _name is null then '' else 'name = $1,' end ||

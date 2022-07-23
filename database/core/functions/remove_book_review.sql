@@ -7,26 +7,22 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    return core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
   end if;
 
   if not exists(select 1
                 from core.book_reviews br
                 where br.id = _review_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Review not found.',
-        'code', 'NOT_FOUND'
-      )
-    );
+    return core.error_response(
+      'REVIEW_NOT_FOUND',
+      'Review not found.',
+      'OBJECT_NOT_FOUND'
+      );
   end if;
 
   delete from main.book_reviews br

@@ -16,25 +16,21 @@ begin
                 from core.users u
                 where u.id = _invoker_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Invoker not found.',
-        'code', 'UNAUTHORIZED'
-      )
-    );
+    return core.error_response(
+      'UNAUTHORIZED',
+      'Invoker not found.',
+      'UNAUTHORIZED'
+      );
   end if;
 
   if not exists(select 1
                 from core.books b
                 where b.id = _book_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Book not found.',
-        'code', 'NOT_FOUND'
-        )
+    return core.error_response(
+      'BOOK_NOT_FOUND',
+      'Book not found.',
+      'OBJECT_NOT_FOUND'
       );
   end if;
 
@@ -44,65 +40,48 @@ begin
      and _author_id is null
      and _description is null
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Nothing to update.',
-        'code', 'EMPTY_QUERY'
-      )
-    );
-  end if;
-
-  if _title is not null then
-    if _title = '' then
-      return jsonb_build_object(
-        'status', 1,
-        'details', jsonb_build_object(
-          'message', 'Title cannot be empty.',
-          'code', 'INVALID_ARGUMENT'
-        )
+    return core.error_response(
+      'EMPTY_QUERY',
+      'Nothing to update.',
+      'INVALID_ARGUMENT'
       );
-    elseif length(_title) > 256 then
-      return jsonb_build_object(
-        'status', 1,
-        'details', jsonb_build_object(
-          'message', 'Title is out of range.',
-          'code', 'INVALID_ARGUMENT'
-        )
+  end if;
+
+  if _title is not null and (length(_title) < 1 or length(_title) > 256) then
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Book title is out of range.',
+      'INVALID_ARGUMENT',
+      1, 256
       );
-    end if;
   end if;
 
-  if _price is not null and _price <= 0 then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Price must be a positive number.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+  if _price is not null and _price < 0.1 then
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Book price is out of range.',
+      'INVALID_ARGUMENT',
+      0.1
+      );
   end if;
 
-  if _count is not null and _count <= 0 then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Count must be a positive number.',
-        'code', 'INVALID_ARGUMENT'
-      )
-    );
+  if _count < 0 then
+    return core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'Book count is out of range.',
+      'INVALID_ARGUMENT',
+      0
+      );
   end if;
 
   if _author_id is not null and not exists(select 1
                                            from core.authors a
                                            where a.id = _author_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Author not found.',
-        'code', 'NOT_FOUND'
-        )
+    return core.error_response(
+      'AUTHOR_NOT_FOUND',
+      'Author not found.',
+      'OBJECT_NOT_FOUND'
       );
   end if;
 
@@ -110,12 +89,10 @@ begin
                 from core.languages l
                 where l.id = _language_id)
   then
-    return jsonb_build_object(
-      'status', 1,
-      'details', jsonb_build_object(
-        'message', 'Language not found.',
-        'code', 'NOT_FOUND'
-        )
+    return core.error_response(
+      'LANGUAGE_NOT_FOUND',
+      'Language not found.',
+      'OBJECT_NOT_FOUND'
       );
   end if;
 
