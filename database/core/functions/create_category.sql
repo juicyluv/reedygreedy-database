@@ -27,6 +27,18 @@ begin
     return;
   end if;
 
+  if exists(select 1
+            from core.categories c
+            where lower(c.name) = lower(_name))
+  then
+    error := core.error_response(
+      'CATEGORY_ALREADY_EXISTS',
+      'Category already exists.',
+      'OBJECT_DUPLICATE'
+      );
+    return;
+  end if;
+
   insert into main.categories(id, name)
   values(default, _name)
   returning id into category_id;
