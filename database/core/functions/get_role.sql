@@ -1,16 +1,22 @@
 create or replace function core.get_role(_role_id     smallint,
   out                                    name         text,
   out                                    access_level smallint,
+  out                                    created_at   timestamptz,
+  out                                    updated_at   timestamptz,
   out                                    error        jsonb)
 as $$
 begin
 
   select
     r.name,
-    r.access_level
+    r.access_level,
+    r.created_at,
+    r.updated_at
   into
     name,
-    access_level
+    access_level,
+    created_at,
+    updated_at
   from core.roles r
   where r.id = _role_id;
 
