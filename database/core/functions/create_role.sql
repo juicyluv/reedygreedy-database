@@ -40,8 +40,7 @@ begin
 
   if exists(select 1
             from core.roles r
-            where lower(r.name) = lower(_name)
-            and r.access_level = _access_level)
+            where lower(r.name) = lower(_name))
   then
     error := core.error_response(
       'ROLE_ALREADY_EXISTS',

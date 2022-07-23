@@ -38,6 +38,18 @@ begin
     return;
   end if;
 
+  if exists(select 1
+            from core.authors a
+            where lower(a.name) = lower(_name))
+  then
+    error := core.error_response(
+      'AUTHOR_ALREADY_EXISTS',
+      'Author already exists.',
+      'OBJECT_DUPLICATE'
+      );
+    return;
+  end if;
+
   insert into main.authors(id, name, creator_id, description)
   values(default, _name, _invoker_id, _description)
   returning id into author_id;

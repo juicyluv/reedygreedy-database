@@ -49,6 +49,18 @@ begin
     return;
   end if;
 
+  if exists (select 1
+             from core.promocodes p
+             where lower(p.promocode) = lower(_promocode))
+  then
+    error := core.error_response(
+      'PROMOCODE_ALREADY_EXISTS',
+      'Promocode already exists.',
+      'OBJECT_DUPLICATE'
+      );
+    return;
+  end if;
+
   insert into main.promocodes(id, promocode, creator_id, payload, usage_count, ending_at)
   values(default, _promocode, _invoker_id, _payload, _usage_count, _ending_at)
   returning id into promocode_id;
