@@ -3,6 +3,7 @@ create or replace function core.update_user(_invoker_id  bigint,
                                             _username    text = null,
                                             _name        text = null,
                                             _timezone_id smallint = null,
+                                            _role_id     smallint = null,
                                             _payload     jsonb = null)
 returns jsonb as $$
 declare
@@ -77,10 +78,22 @@ begin
       );
   end if;
 
+  if _role_id is not null and not exists(select 1
+                                             from core.roles r
+                                             where r.id = _role_id)
+  then
+    return core.error_response(
+      'ROLE_NOT_FOUND',
+      'Role not found.',
+      'OBJECT_NOT_FOUND'
+      );
+  end if;
+
   _query := case when _username is null then '' else 'username = $1,' end ||
             case when _name     is null then '' else 'name = $2,' end ||
             case when _payload  is null then '' else 'payload = $3,' end ||
             case when _timezone_id is null then '' else 'timezone_id = $4,' end ||
+            case when _role_id is null then '' else 'role_id = $5,' end ||
             'updated_at = now() ';
 
   _sqlstr := format('UPDATE main.users ' ||
@@ -88,7 +101,7 @@ begin
                     'WHERE id = $5', left(_query, length(_query) - 1));
 
   execute _sqlstr
-  using _username, _name, _payload, _timezone_id, _user_id;
+  using _username, _name, _payload, _timezone_id, _role_id, _user_id;
 
   return jsonb_build_object('status', 0);
 
@@ -100,6 +113,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.update_user(bigint, bigint, text, text, smallint, jsonb) owner to postgres;
-grant execute on function core.update_user(bigint, bigint, text, text, smallint, jsonb) to postgres, web;
-revoke all on function core.update_user(bigint, bigint, text, text, smallint, jsonb) from public;
+alter function core.update_user(bigint, bigint, text, text, smallint, smallint, jsonb) owner to postgres;
+grant execute on function core.update_user(bigint, bigint, text, text, smallint, smallint, jsonb) to postgres, web;
+revoke all on function core.update_user(bigint, bigint, text, text, smallint, smallint, jsonb) from public;
