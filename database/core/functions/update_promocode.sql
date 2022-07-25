@@ -46,7 +46,7 @@ begin
 
   if _promocode is not null and (length(_promocode) < 1 or length(_promocode) > 24) then
     return core.error_response(
-      'PROMOCODE_OUT_OF_RANGE',
+      'VALUE_OUT_OF_RANGE',
       'Promocode is out of range.',
       'INVALID_ARGUMENT',
       1, 24
@@ -67,6 +67,17 @@ begin
       'VALUE_OUT_OF_RANGE',
       'Promocode ending time cannot be in the past.',
       'INVALID_ARGUMENT'
+      );
+  end if;
+
+  if _promocode is not null and exists(select 1
+                                       from core.promocodes p
+                                       where lower(p.promocode) = lower(_promocode))
+  then
+    return core.error_response(
+      'PROMOCODE_ALREADY_EXISTS',
+      'Promocode already exists',
+      'OBJECT_DUPLICATE'
       );
   end if;
 

@@ -47,6 +47,17 @@ begin
       );
   end if;
 
+  if _name is not null and exists(select 1
+                                  from core.categories c
+                                  where lower(c.name) = lower(_name))
+  then
+    return core.error_response(
+      'CATEGORY_ALREADY_EXISTS',
+      'Category already exists.',
+      'OBJECT_DUPLICATE'
+      );
+  end if;
+
   _query := case when _name is null then '' else 'name = $1,' end ||
             'updated_at = now() ';
 
