@@ -58,6 +58,17 @@ begin
       );
   end if;
 
+  if _name is not null and exists(select 1
+                                  from main.authors a
+                                  where lower(a.name) = lower(_name))
+  then
+    return core.error_response(
+      'AUTHOR_ALREADY_EXISTS',
+      'Author already exists.',
+      'OBJECT_DUPLICATE'
+      );
+  end if;
+
   _query := case when _name is null then '' else 'name = $1,' end ||
             case when _description is null then '' else 'description = $2,' end ||
             'updated_at = now() ';
