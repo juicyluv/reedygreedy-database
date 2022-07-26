@@ -5,7 +5,6 @@ select
   name,
   description,
   payload,
-  user_id,
   created_at,
   updated_at
 from main.achievements;
