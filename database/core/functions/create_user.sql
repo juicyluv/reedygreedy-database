@@ -4,6 +4,7 @@ create or replace function core.create_user(_invoker_id  bigint,
                                             _password    text,
                                             _timezone_id smallint,
                                             _role_id     smallint,
+                                            _avatar_url  text = null,
                                             _name        text = null,
                                             _payload     jsonb = null,
   out                                       user_id      bigint,
@@ -62,7 +63,17 @@ begin
     return;
   end if;
 
-  if length(_name) < 1 or length(_name) > 64 then
+  if _avatar_url is not null and length(_avatar_url) < 1  then
+    error := core.error_response(
+      'VALUE_OUT_OF_RANGE',
+      'User avatar URL is out of range.',
+      'INVALID_ARGUMENT',
+      1
+      );
+    return;
+  end if;
+
+  if _name is not null and (length(_name) < 1 or length(_name) > 64) then
     error := core.error_response(
        'VALUE_OUT_OF_RANGE',
        'User name is out of range.',
@@ -120,8 +131,8 @@ begin
     return;
   end if;
 
-  insert into main.users(id, username, email, password, creator_id, name, payload, timezone_id, role_id)
-  values(default, _username, _email, _password, _invoker_id, _name, _payload, _timezone_id, _role_id)
+  insert into main.users(id, username, email, password, creator_id, name, payload, timezone_id, role_id, avatar_url)
+  values(default, _username, _email, _password, _invoker_id, _name, _payload, _timezone_id, _role_id, _avatar_url)
   returning id into user_id;
 
   error := jsonb_build_object('status', 0);
@@ -135,6 +146,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.create_user(bigint, text, text, text, smallint, smallint, text, jsonb) owner to postgres;
-grant execute on function core.create_user(bigint, text, text, text, smallint, smallint, text, jsonb) to postgres, web;
-revoke all on function core.create_user(bigint, text, text, text, smallint, smallint, text, jsonb) from public;
+alter function core.create_user(bigint, text, text, text, smallint, smallint, text, text, jsonb) owner to postgres;
+grant execute on function core.create_user(bigint, text, text, text, smallint, smallint, text, text, jsonb) to postgres, web;
+revoke all on function core.create_user(bigint, text, text, text, smallint, smallint, text, text, jsonb) from public;

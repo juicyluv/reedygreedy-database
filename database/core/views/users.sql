@@ -14,7 +14,8 @@ select
   disable_reason,
   timezone_id,
   last_login,
-  role_id
+  role_id,
+  avatar_url
 from main.users
 where deleted_at is null;
 

@@ -6,6 +6,7 @@ create table if not exists main.users(
   creator_id     bigint      references main.users(id),
   timezone_id    smallint    not null references main.timezones(id),
   role_id        smallint    not null references main.roles(id),
+  avatar_url     text,
   name           text,
   payload        jsonb,
   created_at     timestamptz default now(),
