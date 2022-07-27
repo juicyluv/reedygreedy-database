@@ -1,6 +1,6 @@
-create or replace function core.add_achievement_to_user(_invoker_id     bigint,
-                                                        _achievement_id smallint,
-                                                        _user_id        bigint)
+create or replace function core.remove_achievement_from_user(_invoker_id     bigint,
+                                                             _achievement_id smallint,
+                                                             _user_id        bigint)
 returns jsonb as $$
 begin
 
@@ -37,20 +37,21 @@ begin
       );
   end if;
 
-  if exists(select 1
-            from core.users_to_achievements ua
-            where ua.user_id = _user_id
-                  and ua.achievement_id = _achievement_id)
+  if not exists(select 1
+                from core.users_to_achievements ua
+                where ua.achievement_id = _achievement_id
+                      and ua.user_id = _user_id)
   then
     return core.error_response(
-       'ACHIEVEMENT_ALREADY_ADDED_TO_USER',
-       'Achievement is already added to user.',
-       'OBJECT_DUPLICATE'
+      'ACHIEVEMENT_DO_NOT_BELONG_TO_USER',
+      'Achievement do not belong to user.',
+      'OBJECT_DEPENDENCY'
       );
   end if;
 
-  insert into main.users_to_achievements(user_id, achievement_id)
-  values (_user_id, _achievement_id);
+  delete from main.users_to_achievements ua
+  where ua.achievement_id = _achievement_id
+        and ua.user_id = _user_id;
 
   return jsonb_build_object('status', 0);
 
@@ -62,6 +63,6 @@ exception
 end
 $$ language plpgsql volatile security definer;
 
-alter function core.add_achievement_to_user(bigint, smallint, bigint) owner to postgres;
-grant execute on function core.add_achievement_to_user(bigint, smallint, bigint) to postgres, web;
-revoke all on function core.add_achievement_to_user(bigint, smallint, bigint) from public;
+alter function core.remove_achievement_from_user(bigint, smallint, bigint) owner to postgres;
+grant execute on function core.remove_achievement_from_user(bigint, smallint, bigint) to postgres, web;
+revoke all on function core.remove_achievement_from_user(bigint, smallint, bigint) from public;
